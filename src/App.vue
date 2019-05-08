@@ -1,17 +1,65 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="main">
+      <InputValue @sendId="getById" @sendName="getByClientName" @sendStatus="getByStatus" />
+      <Table :data="this.data" />
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Table from './components/Table/Table.vue'
+import InputValue from './components/InputValue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    Table,
+    InputValue
+  },
+  data () {
+    return {
+      baseUrl: 'http://services.solucx.com.br/mock/',
+      data: [],
+      auxData: []
+    }
+  },
+  methods: {
+    getById(id) {
+      if (id == '') {
+        this.data = this.auxData
+      } else {
+        this.data = this.data.filter((el, data) => {
+          return el.id.toString().includes(id) ? el: ''
+        })
+      }
+    },
+    getByClientName(name) {
+      if (name == '') {
+        this.data = this.auxData
+      } else {
+        this.data = this.data.filter((el, data) => {
+          return el.name.includes(name) ? el: ''
+        })
+      }
+    },
+    getByStatus(status) {
+      if (status == '') {
+        this.data = this.auxData
+      } else {
+        this.data = this.data.filter((el, data) => {
+          return el.status.includes(status) ? el: ''
+        })
+      }
+    },
+    async getAllData() {
+      const response = await this.$http.get(this.baseUrl+'drones')
+      this.data = response.data
+      this.auxData = response.data
+    }
+  },
+  created () {
+    this.getAllData()
   }
 }
 </script>
@@ -19,10 +67,12 @@ export default {
 <style>
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  width: 90vw;
+  margin: 0 auto;
+
+  display: flex;
+}
+.main {
+  margin: 100px auto;
 }
 </style>
